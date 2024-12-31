@@ -10,6 +10,6 @@ public class Game : Program
 {
     public override void Create()
     {
-        Console.WriteLine();
+        new GameObject("yaay");
     }
 }

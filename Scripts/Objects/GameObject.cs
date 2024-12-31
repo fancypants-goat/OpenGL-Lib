@@ -210,7 +210,7 @@ public class GameObject : IDisposable
         Array.Copy(args, fullArgs, args.Length);
         fullArgs[^1] = this;
         
-        T component = (T)Activator.CreateInstance(typeof(T));
+        T component = (T)Activator.CreateInstance(typeof(T), fullArgs);
         
         if (component == null) throw new Exception($"Failed to create component of type {typeof(T)} in AddComponent<T>");
         
