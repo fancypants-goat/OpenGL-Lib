@@ -1,7 +1,7 @@
 
 
 
-namespace OpenGL;
+namespace Engine;
 
 public enum ShaderType
 {

@@ -1,9 +1,10 @@
-using OpenGL.Components;
+using System.Drawing;
+using Engine.Components;
 using OpenTK.Mathematics;
 
 
 
-namespace OpenGL;
+namespace Engine;
 
 public class GameObject : IDisposable
 {
@@ -47,14 +48,14 @@ public class GameObject : IDisposable
         this.name = name;
         
         this.isActive = isActive;
-        this.isGloballyActive = isActive; // setting isGloballyActive is technically not required, but I'll do it anyway just in case
+        this.isGloballyActive = isActive;
         
         this.children = [];
         this.parent = null;
         
         this.components = [];
         
-        this.transform = AddComponent<Transform>(new Vector3(0), new Vector3(0), new Vector3(0));
+        this.transform = AddComponent<Transform>(Vector3.Zero, Vector3.Zero, Vector3.Zero);
     }
     
     public GameObject(string name, GameObject parent, bool isActive = true)
@@ -62,22 +63,24 @@ public class GameObject : IDisposable
         this.name = name;
         
         this.isActive = isActive;
-        this.isGloballyActive = isActive; // setting isGloballyActive is technically not required, but I'll do it anyway just in case
+        this.isGloballyActive = isActive;
         
         this.children = [];
-        SetParent(parent); // if the parent is null, SetParent(GameObject parent) will automatically add this as a rootObject]
+        SetParent(parent);
         
         this.components = [];
         
-        this.transform = AddComponent<Transform>(new Vector3(0), new Vector3(0), new Vector3(0));
+        this.transform = AddComponent<Transform>(Vector3.Zero, Vector3.Zero, Vector3.Zero);
     }
     
     public GameObject(string name, Transform transform, bool isActive = true)
     {
+        rootObjects.Add(this);
+        
         this.name = name;
         
         this.isActive = isActive;
-        this.isGloballyActive = isActive; // setting isGloballyActive is technically not required, but I'll do it anyway just in case
+        this.isGloballyActive = isActive;
         
         this.children = [];
         this.parent = null;
@@ -94,7 +97,7 @@ public class GameObject : IDisposable
         this.name = name;
         
         this.isActive = isActive;
-        this.isGloballyActive = isActive; // setting isGloballyActive is technically not required, but I'll do it anyway just in case
+        this.isGloballyActive = isActive;
         
         this.children = [];
         SetParent(parent);
@@ -113,7 +116,7 @@ public class GameObject : IDisposable
         this.name = name;
         
         this.isActive = isActive;
-        this.isGloballyActive = isActive; // setting isGloballyActive is technically not required, but I'll do it anyway just in case
+        this.isGloballyActive = isActive;
         
         this.children = [];
         this.parent = null;
@@ -125,12 +128,10 @@ public class GameObject : IDisposable
     
     public GameObject(string name, GameObject parent, Vector3 position, Vector3 size, Vector3 rotation, bool isActive = true)
     {
-        rootObjects.Add(this);
-        
         this.name = name;
         
         this.isActive = isActive;
-        this.isGloballyActive = isActive; // setting isGloballyActive is technically not required, but I'll do it anyway just in case
+        this.isGloballyActive = isActive;
         
         this.children = [];
         SetParent(parent);
@@ -139,6 +140,237 @@ public class GameObject : IDisposable
         
         this.transform = AddComponent<Transform>(position, size, rotation);
     }
+    
+    public GameObject(string name, Transform transform, Material material, bool isActive = true)
+    {
+        rootObjects.Add(this);
+        
+        this.name = name;
+        
+        this.isActive = isActive;
+        this.isGloballyActive = isActive;
+        
+        this.children = [];
+        this.parent = null;
+        
+        this.components = [];
+        
+        this.transform = transform;
+        this.transform.gameObject = this;
+        components.Add(this.transform);
+        
+        AddComponent<SpriteRenderer>(material);   
+    }
+    
+    public GameObject(string name, GameObject parent, Transform transform, Material material, bool isActive = true)
+    {
+        this.name = name;
+        
+        this.isActive = isActive;
+        this.isGloballyActive = isActive;
+        
+        this.children = [];
+        SetParent(parent);
+        
+        this.components = [];
+        
+        this.transform = transform;
+        this.transform.gameObject = this;
+        components.Add(this.transform);
+        
+        AddComponent<SpriteRenderer>(material);  
+    }
+    
+    public GameObject(string name, Vector3 position, Vector3 size, Vector3 rotation, Material material, bool isActive = true)
+    {
+        rootObjects.Add(this);
+        
+        this.name = name;
+        
+        this.isActive = isActive;
+        this.isGloballyActive = isActive;
+        
+        this.children = [];
+        this.parent = null;
+        
+        this.components = [];
+        
+        this.transform = AddComponent<Transform>(position, size, rotation);
+        
+        AddComponent<SpriteRenderer>(material);  
+    }
+    
+    public GameObject(string name, GameObject parent, Vector3 position, Vector3 size, Vector3 rotation, Material material, bool isActive = true)
+    {
+        this.name = name;
+        
+        this.isActive = isActive;
+        this.isGloballyActive = isActive;
+        
+        this.children = [];
+        SetParent(parent);
+        
+        this.components = [];
+        
+        this.transform = AddComponent<Transform>(position, size, rotation);
+        
+        AddComponent<SpriteRenderer>(material);  
+    }
+    
+    public GameObject(string name, Transform transform, Color color, bool isActive = true)
+    {
+        rootObjects.Add(this);
+        
+        this.name = name;
+        
+        this.isActive = isActive;
+        this.isGloballyActive = isActive;
+        
+        this.children = [];
+        this.parent = null;
+        
+        this.components = [];
+        
+        this.transform = transform;
+        this.transform.gameObject = this;
+        components.Add(this.transform);
+        
+        AddComponent<SpriteRenderer>(color);
+    }
+    
+    public GameObject(string name, GameObject parent, Transform transform, Color color, bool isActive = true)
+    {
+        this.name = name;
+        
+        this.isActive = isActive;
+        this.isGloballyActive = isActive;
+        
+        this.children = [];
+        SetParent(parent);
+        
+        this.components = [];
+        
+        this.transform = transform;
+        this.transform.gameObject = this;
+        components.Add(this.transform);
+        
+        AddComponent<SpriteRenderer>(color);
+    }
+    
+    public GameObject(string name, Vector3 position, Vector3 size, Vector3 rotation, Color color, bool isActive = true)
+    {
+        rootObjects.Add(this);
+        
+        this.name = name;
+        
+        this.isActive = isActive;
+        this.isGloballyActive = isActive;
+        
+        this.children = [];
+        this.parent = null;
+        
+        this.components = [];
+        
+        this.transform = AddComponent<Transform>(position, size, rotation);
+        
+        AddComponent<SpriteRenderer>(color);
+    }
+    
+    public GameObject(string name, GameObject parent, Vector3 position, Vector3 size, Vector3 rotation, Color color, bool isActive = true)
+    {
+        this.name = name;
+        
+        this.isActive = isActive;
+        this.isGloballyActive = isActive;
+        
+        this.children = [];
+        SetParent(parent);
+        
+        this.components = [];
+        
+        this.transform = AddComponent<Transform>(position, size, rotation);
+        
+        AddComponent<SpriteRenderer>(color);
+    }
+    
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    public GameObject(string name, Transform transform, Texture texture, Color color, bool isActive = true)
+    {
+        rootObjects.Add(this);
+        
+        this.name = name;
+        
+        this.isActive = isActive;
+        this.isGloballyActive = isActive;
+        
+        this.children = [];
+        this.parent = null;
+        
+        this.components = [];
+        
+        this.transform = transform;
+        this.transform.gameObject = this;
+        components.Add(this.transform);
+        
+        AddComponent<SpriteRenderer>(texture, color);
+    }
+    
+    public GameObject(string name, GameObject parent, Transform transform, Texture texture, Color color, bool isActive = true)
+    {
+        this.name = name;
+        
+        this.isActive = isActive;
+        this.isGloballyActive = isActive;
+        
+        this.children = [];
+        SetParent(parent);
+        
+        this.components = [];
+        
+        this.transform = transform;
+        this.transform.gameObject = this;
+        components.Add(this.transform);
+        
+        AddComponent<SpriteRenderer>(texture, color);
+    }
+    
+    public GameObject(string name, Vector3 position, Vector3 size, Vector3 rotation, Texture texture, Color color, bool isActive = true)
+    {
+        rootObjects.Add(this);
+        
+        this.name = name;
+        
+        this.isActive = isActive;
+        this.isGloballyActive = isActive;
+        
+        this.children = [];
+        this.parent = null;
+        
+        this.components = [];
+        
+        this.transform = AddComponent<Transform>(position, size, rotation);
+        
+        AddComponent<SpriteRenderer>(texture, color);
+    }
+    
+    public GameObject(string name, GameObject parent, Vector3 position, Vector3 size, Vector3 rotation, Texture texture, Color color, bool isActive = true)
+    {
+        this.name = name;
+        
+        this.isActive = isActive;
+        this.isGloballyActive = isActive;
+        
+        this.children = [];
+        SetParent(parent);
+        
+        this.components = [];
+        
+        this.transform = AddComponent<Transform>(position, size, rotation);
+        
+        AddComponent<SpriteRenderer>(texture, color);
+    }
+    
+    
     
     
     //

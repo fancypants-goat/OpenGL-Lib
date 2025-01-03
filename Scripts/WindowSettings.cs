@@ -4,7 +4,7 @@ using OpenTK.Windowing.Desktop;
 
 
 
-namespace OpenGL;
+namespace Engine;
 
 public static class WindowSettings
 {

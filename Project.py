@@ -117,7 +117,7 @@ def create_contents(project_name: str, project_path: str) -> None:
     # create the cs contents
     # Launch.cs:
     launch_cs_content: str = f'''\
-using OpenGL;
+using Engine;
 
 
 
@@ -139,8 +139,9 @@ public class Launch
     
     # Program.cs:
     program_cs_content: str = f'''\
-using OpenGL;
+using Engine;
 using OpenTK.Mathematics;
+using System.Drawing;
 
 
 
@@ -150,8 +151,9 @@ public class Game : Program
 {{
     public override void Create()
     {{
-        new Camera(new Vector3(0, 0, -10), new Vector3(0), 100, 0, 1000, true);
-        new GameObject("OpenGL-Logo", new Vector3(0), new Vector3(20, 20, 0), new Vector3(0), Texture.FromFile(Assets.GetFilePath("OpenGL-Logo.png")));
+        new Camera(CameraType.Perspective, new Vector3(0, 0, -10), new Vector3(0), 100, 0, 1000, isMain: true);
+        
+        new GameObject("OpenGL-Logo", new Vector3(0), new Vector3(20, 20, 0), new Vector3(0), Texture.FromFile(Assets.GetFilePath("OpenGL-Logo.png"), mipmap: true), Color.White);
     }}
 }}
 '''

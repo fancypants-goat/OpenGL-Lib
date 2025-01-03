@@ -1,9 +1,12 @@
-using OpenGL.Components;
-using OpenGL.Interfaces;
+using System.Drawing;
+using Engine.Components;
+using Engine.Interfaces;
+using Engine.OpenGL;
+using OpenTK.Graphics.OpenGL4;
 
 
 
-namespace OpenGL;
+namespace Engine;
 
 public class SpriteRenderer : Component, IDrawable, IDisposable
 {
@@ -67,9 +70,16 @@ public class SpriteRenderer : Component, IDrawable, IDisposable
     20, 21, 23, 20, 23, 22
     ];
     
+    // will be replaced with a default class containing default shaders and materials
+    private readonly static ShaderProgram _defaultShader = new(
+        new Shader(Assets.GetFilePath("Shaders/default/sprite/shader.vert"), ShaderType.VertexShader),
+        new Shader(Assets.GetFilePath("Shaders/default/sprite/shader.frag"), ShaderType.FragmentShader));
     
     
     
+    int vao;
+    int vbo;
+    int ebo;
     
     
     // ----- OTHER STUFF THAT IS ACTUALLY IMPORTANT ----- //
@@ -83,6 +93,57 @@ public class SpriteRenderer : Component, IDrawable, IDisposable
         IDrawable.drawables.Add(this);
         
         this.material = material;
+        
+        Create();
+    }
+    public SpriteRenderer(Texture texture, Color color, GameObject go) : base(go)
+    {
+        IDrawable.drawables.Add(this);
+        
+        this.material = new Material
+        {
+            shader = _defaultShader,
+            texture = texture,
+            color = color,
+            useTexture = true
+        };
+        
+        Create();
+    }
+    public SpriteRenderer(Color color, GameObject go) : base(go)
+    {
+        IDrawable.drawables.Add(this);
+        
+        this.material = new Material
+        {
+            shader = _defaultShader,
+            color = color,
+            useTexture = false
+        };
+        
+        Create();
+    }
+    
+    protected void Create()
+    {
+        vao = GL.GenVertexArray();
+        vbo = GL.GenBuffer();
+        ebo = GL.GenBuffer();
+        
+        GL.BindVertexArray(vao);
+        GL.BindBuffer(BufferTarget.ArrayBuffer, vbo);
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, ebo);
+        
+        GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.StaticDraw);
+        GL.BufferData(BufferTarget.ElementArrayBuffer, indices.Length * sizeof(uint), indices, BufferUsageHint.StaticDraw);
+        
+        GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
+        GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
+        
+        GL.EnableVertexAttribArray(0);
+        GL.EnableVertexAttribArray(1);
+        
+        GL.BindVertexArray(0);
     }
     
     
@@ -90,6 +151,16 @@ public class SpriteRenderer : Component, IDrawable, IDisposable
 
     public void Draw()
     {
-        throw new NotImplementedException();
+        GL.BindVertexArray(vao);
+        
+        material.Use();
+        
+        material.shader.SetUniformMatrix4("model", transform.positionMatrix * transform.rotationMatrix * transform.sizeMatrix);
+        material.shader.SetUniformMatrix4("projection", Camera.main.Projection);
+        material.shader.SetUniformMatrix4("view", Camera.main.View);
+        material.shader.SetUniform4("color", material.color);
+        material.shader.SetUniform1("useTexture", material.useTexture ? 1 : 0);
+        
+        GL.DrawElements(PrimitiveType.Triangles, indices.Length, DrawElementsType.UnsignedInt, 0);
     }
 }

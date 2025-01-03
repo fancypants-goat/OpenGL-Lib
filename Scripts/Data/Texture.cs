@@ -2,7 +2,7 @@ using OpenTK.Graphics.OpenGL4;
 using StbImageSharp;
 
 
-namespace OpenGL;
+namespace Engine;
 
 public class Texture : IDisposable
 {
@@ -44,8 +44,8 @@ public class Texture : IDisposable
     
     public void Use()
     {
-        // add the start id of TextureUnit (Texture0) to get the id of the TextureUnit corresponding to textureUnit
-        GL.ActiveTexture((TextureUnit)textureUnitStart + textureUnit);
+        //// add the start id of TextureUnit (Texture0) to get the id of the TextureUnit corresponding to textureUnit
+        GL.ActiveTexture(TextureUnit.Texture0);
         GL.BindTexture(TextureTarget.Texture2D, Handle);
     }
     
@@ -88,24 +88,26 @@ public class Texture : IDisposable
     
     
     
-    
-    public static Texture FromFile(string path, int mipmapLevel)
+    /// <summary>
+    /// Creates a texture from an image file. 
+    /// Only change the values after mipmap if you know what you are doing and it is required!
+    /// </summary>
+    public static Texture FromFile(string path, bool mipmap = false, ColorComponents colorComponents = ColorComponents.RedGreenBlueAlpha, PixelInternalFormat pixelInternalFormat = PixelInternalFormat.Rgba, PixelFormat pixelFormat = PixelFormat.Rgba, PixelType pixelType = PixelType.UnsignedByte)
     {
-        if (mipmapLevel < 0) mipmapLevel = 0;
-        
         var texture = new Texture();
         
         texture.Use();
         
         StbImage.stbi_set_flip_vertically_on_load(1);
         
-        ImageResult image = ImageResult.FromStream(File.OpenRead(path), ColorComponents.RedGreenBlueAlpha);
+        ImageResult image = ImageResult.FromStream(File.OpenRead(path), colorComponents);
+        
         
         if (image == null || image.Data == null) throw new Exception($"Failed to load texture form {path}");
         
-        GL.TexImage2D(TextureTarget.Texture2D, mipmapLevel, PixelInternalFormat.Rgba, image.Width, image.Height, 0, PixelFormat.Rgba, PixelType.Byte, image.Data);
+        GL.TexImage2D(TextureTarget.Texture2D, 0, pixelInternalFormat, image.Width, image.Height, 0, pixelFormat, pixelType, image.Data);
         
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, mipmapLevel != 0 ? (int)TextureMinFilter.LinearMipmapLinear : (int)TextureMinFilter.Linear);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, mipmap ? (int)TextureMinFilter.LinearMipmapLinear : (int)TextureMinFilter.Linear);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
@@ -113,7 +115,7 @@ public class Texture : IDisposable
         texture.Width = image.Width;
         texture.Height = image.Height;
         
-        if (mipmapLevel != 0)
+        if (mipmap)
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
             
         return texture;

@@ -1,7 +1,7 @@
 
 
 
-namespace OpenGL.Components;
+namespace Engine.Components;
 
 public class Component (GameObject gameObject) : IDisposable
 {

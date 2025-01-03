@@ -1,11 +1,13 @@
-﻿using OpenTK;
+﻿using System.Drawing;
+using Engine.Interfaces;
+using OpenTK;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 
 
 
-namespace OpenGL;
+namespace Engine;
 
 public class Program : GameWindow
 {
@@ -34,6 +36,8 @@ public class Program : GameWindow
         
         GL.GetInteger(GetPName.MaxTextureImageUnits, out Texture.maxTextureUnits);
         
+        GL.ClearColor(Color.Black);
+        
         
         Create();
     }
@@ -49,6 +53,9 @@ public class Program : GameWindow
     {
         base.OnUpdateFrame(args);
         
+        Time.deltaTime = (float)args.Time * Time.timeScale;
+        Time.deltaTimeMilliseconds = Time.deltaTime / 1000;
+        
         Update();
     }
 
@@ -63,6 +70,18 @@ public class Program : GameWindow
     protected override void OnRenderFrame(FrameEventArgs args)
     {
         base.OnRenderFrame(args);
+        
+        GL.Clear(ClearBufferMask.ColorBufferBit);
+        GL.Clear(ClearBufferMask.DepthBufferBit);
+        
+        Camera.main.UpdateCamera(ClientSize.X, ClientSize.Y);
+        
+        foreach (var drawable in IDrawable.drawables)
+        {
+            drawable.Draw();
+        }
+        
+        SwapBuffers();  
     }
 
 
@@ -76,6 +95,9 @@ public class Program : GameWindow
     protected override void OnResize(ResizeEventArgs e)
     {
         base.OnResize(e);
+        
+        Camera.main.UpdateCamera(e.Width, e.Height);
+        GL.Viewport(0, 0, e.Width, e.Height);
     }
 
 

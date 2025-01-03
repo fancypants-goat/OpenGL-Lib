@@ -1,8 +1,8 @@
-using OpenGL.Components;
+using Engine.Components;
 using OpenTK.Mathematics;
 
 
-namespace OpenGL;
+namespace Engine;
 
 public class Transform : Component
 {
@@ -44,7 +44,9 @@ public class Transform : Component
         set
         {
             _rotation = value;
-            rotationMatrix = Matrix4.CreateScale(_size);
+            rotationMatrix = Matrix4.CreateRotationX(MathHelper.DegreesToRadians(_rotation.X))
+                            *Matrix4.CreateRotationY(MathHelper.DegreesToRadians(_rotation.Y))
+                            *Matrix4.CreateRotationZ(MathHelper.DegreesToRadians(_rotation.Z));
             if (gameObject.parent != null)
                 rotationMatrix *= gameObject.parent.transform.rotationMatrix;
         }

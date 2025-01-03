@@ -2,7 +2,7 @@ using System.Drawing;
 
 
 
-namespace OpenGL;
+namespace Engine;
 
 public class Material
 {
@@ -10,4 +10,14 @@ public class Material
     public Texture texture;
     public Color color;
     public bool useTexture;
+    
+    
+    
+    public void Use()
+    {
+        shader.Use();
+        
+        if (useTexture)
+            texture.Use();
+    }
 }

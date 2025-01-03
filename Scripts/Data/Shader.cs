@@ -1,7 +1,7 @@
 using OpenTK.Graphics.OpenGL4;
 
 
-namespace OpenGL;
+namespace Engine;
 
 public struct Shader : IDisposable
 {
@@ -44,6 +44,8 @@ public struct Shader : IDisposable
         
         Compile();
     }
+    
+    
     public Shader()
     {
         Compile();

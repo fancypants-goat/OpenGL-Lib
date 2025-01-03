@@ -1,7 +1,7 @@
 
 
 
-namespace OpenGL.Interfaces;
+namespace Engine.Interfaces;
 
 public interface IDrawable
 {
